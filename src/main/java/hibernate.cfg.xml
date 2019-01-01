@@ -5,7 +5,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://172.17.0.5:3306/CRUDMVC</property>
+        <property name="hibernate.connection.url">jdbc:mysql://172.17.0.5:3306/crudmvc</property>
         <property name="hibernate.connection.username">root</property>  
  		<property name="hibernate.connection.password">Welcome123</property>
         <property name="hibernate.connection.pool_size">6</property>
