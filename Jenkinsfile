@@ -4,6 +4,7 @@ node{
      git 'https://github.com/octopent/crudmvc_osr.git'
    }
    
+   //abc
    
    stage('SonarQube Server') {
         def mvnHome =  tool name: 'jenkins_maven', type: 'maven'
