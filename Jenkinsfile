@@ -9,7 +9,7 @@ node{
       
    }
    
-   /*stage('SonarQube Server') {
+   stage('SonarQube Server') {
         def mvnHome =  tool name: 'jenkins_maven', type: 'maven'
         withSonarQubeEnv('jenkins_sonar') { 
           sh "${mvnHome}/bin/mvn sonar:sonar"
@@ -23,7 +23,7 @@ node{
                   error "Pipeline aborted due to quality gate failure: ${qg.status}"
               }
           }
-      }*/
+      }
       
       stage('Artifact upload') {
     def server = Artifactory.server 'jenkins_artifactory'
