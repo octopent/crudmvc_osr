@@ -3,11 +3,7 @@ node{
 	stage('SCM Checkout'){
      git 'https://github.com/octopent/crudmvc_osr.git'
    }
-   stage('Package Compilation'){
-      def mvnHome =  tool name: 'jenkins_maven', type: 'maven'   
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean install"
-      
-   }
+   
    
    stage('SonarQube Server') {
         def mvnHome =  tool name: 'jenkins_maven', type: 'maven'
@@ -24,6 +20,12 @@ node{
               }
           }
       }
+      
+      stage('Package Compilation'){
+      def mvnHome =  tool name: 'jenkins_maven', type: 'maven'   
+      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean install"
+      
+   }
       
       stage('Artifact upload') {
     def server = Artifactory.server 'jenkins_artifactory'
