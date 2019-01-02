@@ -59,17 +59,65 @@ node{
         sh 'scp /var/lib/jenkins/warFiles/crudMVC.war minduser@deployment-vm.eastus.cloudapp.azure.com:/opt/apache-tomcat-8.5.37/webapps'
     }
     
-	stage('Email Notification'){
-		mail bcc: '', body: '''Hi!
-		Your Build Passed!
-		All Good!
-		Mayank''', cc: '', from: '', replyTo: '', subject: 'PROJECT BUILD SUCCESS', to: 'rathore.mayanksgh@gmail.com'
-	}
+    stage('JIRA ENVIRONMENT'){
+    
+          if(currentBuild.previousBuild.result.toString() == 'SUCCESS'){
+              
+              //SENDING EMAIL
+              stage('EMAIL NOTIFICATION'){
+                    
+                    mail bcc: '', body: '''Hi!
+        		    Your Build Passed!
+        		    All Good!
+        		    Mayank''', cc: '', from: '', replyTo: '', subject: 'BUILD SUCCESS', to: 'rathore.mayanksgh@gmail.com'
+              }
+          }
+          
+          else{
+                //MAKING A TRANSITION 
+                stage('JIRA ISSUE TRANSITION'){
+                          withEnv(['JIRA_SITE=jenkins_jirasteps']) {
+                      def transitionInput = 
+                      [
+                          transition: [
+                              id: '21'
+                          ]
+                      ]
+                      jiraTransitionIssue idOrKey: 'MAYAN-1', input: transitionInput
+                    }
+                }
+          }
+       }
    }catch (err){
-		mail bcc: '', body: '''Hi! 
-		Oops! Build Failed!
-		Mayank''', cc: '', from: '', replyTo: '', subject: 'PROJECT BUILD FAILED', to: 'rathore.mayanksgh@gmail.com'
-	
-		currentBuild.result = 'FAILURE'
+	    if(currentBuild.previousBuild.result.toString() == 'SUCCESS'){
+            
+	    //CREATING A NEW JIRA ISSUE
+            stage('CREATTING NEW JIRA ISSUE'){
+
+                withEnv(['JIRA_SITE=jenkins_jirasteps']) {
+                def testIssue = [fields: [ project: [id: '10001'],
+                                      summary: 'BUILD FAILED' ,
+                                      description: 'BUILD FAILED FOR BUILD ' + env.BUILD_ID,
+                                      issuetype: [name: 'Bug']]]
+    
+                response = jiraNewIssue issue: testIssue
+                
+                jiraAssignIssue idOrKey: response.data.key, userName: 'adityajain3896'
+
+                echo response.successful.toString()
+                echo response.data.toString()
+                
+                currentBuild.result = 'FAILURE'
+                }
+            }
+        }
+        else{
+            //ADDING A JIRA COMMENT
+            stage('ADDING A JIRA COMMENT'){
+                withEnv(['JIRA_SITE=jenkins_jirasteps']) {
+                    jiraAddComment idOrKey: 'MAYAN-4', comment: 'Some error!'
+                }
+            }
+        }
    }
 }
